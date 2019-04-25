@@ -123,7 +123,7 @@ const Forme = (props) => {
 
   const children = processChildren(props.children)
 
-  let formProps = {...props}
+  let formProps = {...props, onSubmit: (e => props.onSubmit(e, props.formState, props.setFormState))}
   propKeysForFields.forEach(key => delete formProps[key])
   return <form {...formProps}>{children}</form>
 }
