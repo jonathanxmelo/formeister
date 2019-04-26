@@ -2,10 +2,12 @@ import React from 'react'
 import propKeysForFields from './formStaticPropKeys'
 
 const Forme = (props) => {
-  let formState = props.formState ?
+
+  let propsFormState = props.formState ?
     {...props.formState} : {fields: {}, touched: []}
 
-  const updateState = (e) => {
+  const updateState = ({e, formState}) => {
+    formState = formState || propsFormState
     formState.fields = formState.fields || {}
     let formStateField = formState.fields[e.target.name]
     if (e.target.multiple) {
@@ -27,7 +29,8 @@ const Forme = (props) => {
     props.setFormState(formState)
   }
 
-  const addTouchedField = (e) => {
+  const addTouchedField = ({e, formState}) => {
+    formState = formState || propsFormState
     formState.touched = formState.touched || []
     const name = e.target.name
     if (!formState.touched.includes(name)) formState.touched.push(name)
@@ -35,25 +38,25 @@ const Forme = (props) => {
   }
 
   const onChange = (e, func = null) => {
-    const event = e
+    let obj = {}
     if (func) {
-      e = func(e)
+      obj = func(e, propsFormState)
     }
-    if (props.applyAllOnChange){
-      e = props.applyAllOnChange(e)
+    if (props.allOnChange){
+      obj = props.allOnChange(e, obj.formState || propsFormState)
     }
-    updateState(e && e.nativeEvent ? e : event)
+    updateState({e, ...obj})
   }
 
   const onBlur = (e, func = null) => {
-    const event = e
+    let obj = {}
     if (func) {
-      e = func(e)
+      obj = func(e, propsFormState)
     }
-    if (props.applyAllOnBlur){
-      e = props.applyAllOnBlur(e)
+    if (props.allOnBlur){
+      obj = props.allOnBlur(e, obj.formState || propsFormState)
     }
-    addTouchedField(e)
+    addTouchedField({e, ...obj})
   }
 
   const processChildren = (children) => {
@@ -67,11 +70,11 @@ const Forme = (props) => {
       let defaultValues = {}
 
       if (child.props.type === 'checkbox') {
-        defaultValues['checked'] = formState.fields[child.props.name] || false
+        defaultValues['checked'] = propsFormState.fields[child.props.name] || false
       }else if (child.props.type === 'radio') {
         defaultValues['value'] = child.props.value
-      }else if (formState.fields[child.props.name]) {
-        defaultValues['value'] = formState.fields[child.props.name]
+      }else if (propsFormState.fields[child.props.name]) {
+        defaultValues['value'] = propsFormState.fields[child.props.name]
       }else if (child.props.multiple) {
         defaultValues['value'] = []
       }else{
@@ -112,7 +115,7 @@ const Forme = (props) => {
       }
 
       if (ctrlableElements.includes(child.type)) {
-        return wrap && wrappable ? wrap(Component, formState) : Component()
+        return wrap && wrappable ? wrap(Component, propsFormState) : Component()
       }else{
         return child
       }
@@ -122,7 +125,7 @@ const Forme = (props) => {
   }
 
   const children = processChildren(props.children)
-
+  
   let formProps = {...props, onSubmit: (e => props.onSubmit(e, props.formState, props.setFormState))}
   propKeysForFields.forEach(key => delete formProps[key])
   return <form {...formProps}>{children}</form>
