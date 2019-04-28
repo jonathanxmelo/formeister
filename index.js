@@ -1,15 +1,15 @@
-const  React = require('react')
-const propKeysForFields = require('./formStaticPropKeys')
+import React from 'react'
+import propKeysForFields from './formStaticPropKeys'
 
 const Forme = (props) => {
 
-  let propsFormState = props.formState.fields && props.formState.touched ?
+  let propsFormState = props.formState.values && props.formState.touched ?
     {...props.formState} : {fields: {}, touched: []}
 
   const updateState = (target) => {
     let formState = propsFormState
-    formState.fields = formState.fields || {}
-    let formStateField = formState.fields[target.name]
+    formState.values = formState.values || {}
+    let formStateField = formState.values[target.name]
     if (target.multiple) {
       if (formStateField && formStateField.includes(target.value)) {
         // Deselect
@@ -19,13 +19,13 @@ const Forme = (props) => {
           formStateField.push(target.value) : formStateField = [target.value]
       }
 
-      formState.fields[target.name] = formStateField
+      formState.values[target.name] = formStateField
     }else if (target.type === 'checkbox') {
-      formState.fields[target.name] = target.checked
+      formState.values[target.name] = target.checked
     }else if (target.type === 'radio') {
-      formState.fields[target.name] = target.value
+      formState.values[target.name] = target.value
     }else{
-      formState.fields[target.name] = target.value
+      formState.values[target.name] = target.value
     }
     props.setFormState(formState)
   }
@@ -69,11 +69,11 @@ const Forme = (props) => {
       let defaultValues = {}
 
       if (child.props.type === 'checkbox') {
-        defaultValues['checked'] = propsFormState.fields[child.props.name] || false
+        defaultValues['checked'] = propsFormState.values[child.props.name] || false
       }else if (child.props.type === 'radio') {
         defaultValues['value'] = child.props.value
-      }else if (propsFormState.fields[child.props.name]) {
-        defaultValues['value'] = propsFormState.fields[child.props.name]
+      }else if (propsFormState.values[child.props.name]) {
+        defaultValues['value'] = propsFormState.values[child.props.name]
       }else if (child.props.multiple) {
         defaultValues['value'] = []
       }else{
