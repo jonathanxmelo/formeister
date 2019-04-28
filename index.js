@@ -1,62 +1,61 @@
-import React from 'react'
-import propKeysForFields from './formStaticPropKeys'
+const  React = require('react')
+const propKeysForFields = require('./formStaticPropKeys')
 
 const Forme = (props) => {
 
-  let propsFormState = props.formState ?
+  let propsFormState = props.formState.fields && props.formState.touched ?
     {...props.formState} : {fields: {}, touched: []}
 
-  const updateState = ({e, formState}) => {
-    formState = formState || propsFormState
+  const updateState = (target) => {
+    let formState = propsFormState
     formState.fields = formState.fields || {}
-    let formStateField = formState.fields[e.target.name]
-    if (e.target.multiple) {
-      if (formStateField && formStateField.includes(e.target.value)) {
-        formStateField = formStateField.filter(val => val !== e.target.value)
+    let formStateField = formState.fields[target.name]
+    if (target.multiple) {
+      if (formStateField && formStateField.includes(target.value)) {
+        // Deselect
+        formStateField = formStateField.filter(val => val !== target.value)
       }else{
         formStateField ?
-          formStateField.push(e.target.value) : formStateField = [e.target.value]
+          formStateField.push(target.value) : formStateField = [target.value]
       }
 
-      formState.fields[e.target.name] = formStateField
-    }else if (e.target.type === 'checkbox') {
-      formState.fields[e.target.name] = e.target.checked
-    }else if (e.target.type === 'radio') {
-      formState.fields[e.target.name] = e.target.value
+      formState.fields[target.name] = formStateField
+    }else if (target.type === 'checkbox') {
+      formState.fields[target.name] = target.checked
+    }else if (target.type === 'radio') {
+      formState.fields[target.name] = target.value
     }else{
-      formState.fields[e.target.name] = e.target.value
+      formState.fields[target.name] = target.value
     }
     props.setFormState(formState)
   }
 
-  const addTouchedField = ({e, formState}) => {
-    formState = formState || propsFormState
+  const addTouchedField = (target) => {
+    let formState = formState || propsFormState
     formState.touched = formState.touched || []
-    const name = e.target.name
+    const name = target.name
     if (!formState.touched.includes(name)) formState.touched.push(name)
     props.setFormState(formState)
   }
 
   const onChange = (e, func = null) => {
-    let obj = {}
-    if (func) {
-      obj = func(e, propsFormState)
-    }
     if (props.allOnChange){
-      obj = props.allOnChange(e, obj.formState || propsFormState)
+      props.allOnChange(e, propsFormState, props.setFormState)
     }
-    updateState({e, ...obj})
+    if (func) {
+      func(e, propsFormState, props.setFormState)
+    }
+    updateState(e.target)
   }
 
   const onBlur = (e, func = null) => {
-    let obj = {}
-    if (func) {
-      obj = func(e, propsFormState)
-    }
     if (props.allOnBlur){
-      obj = props.allOnBlur(e, obj.formState || propsFormState)
+      props.allOnBlur(e, propsFormState, props.setFormState)
     }
-    addTouchedField({e, ...obj})
+    if (func) {
+      func(e, propsFormState, props.setFormState)
+    }
+    addTouchedField(e.target)
   }
 
   const processChildren = (children) => {
