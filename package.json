@@ -2,8 +2,9 @@
   "name": "formeister",
   "version": "1.0.6",
   "description": "Easily build forms in React using Hooks.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "prepublishOnly": "babel ./src --out-dir ./dist -s inline",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -12,6 +13,18 @@
     "Forms",
     "Hooks"
   ],
-  "author": "Jonathan Melo",
-  "license": "ISC"
+  "author": "Jonathan Melo <formeisterjs@gmail.com>",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^16.8.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.4",
+    "@babel/core": "^7.4.4",
+    "@babel/preset-env": "^7.4.4",
+    "@babel/preset-react": "^7.0.0"
+  },
+  "files": [
+    "dist/*"
+]
 }
