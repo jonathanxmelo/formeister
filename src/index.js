@@ -31,7 +31,7 @@ const Forme = (props) => {
   }
 
   const addTouchedField = (target) => {
-    let formState = formState || propsFormState
+    let formState = propsFormState
     formState.touched = formState.touched || []
     const name = target.name
     if (!formState.touched.includes(name)) formState.touched.push(name)
