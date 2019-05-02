@@ -38,24 +38,24 @@ const Forme = (props) => {
     props.setFormState(formState)
   }
 
-  const onChange = (e, func = null) => {
+  const onChange = async (target, func = null) => {
     if (props.allOnChange){
-      props.allOnChange(e, propsFormState, props.setFormState)
+      await props.allOnChange(target, propsFormState, props.setFormState)
     }
     if (func) {
-      func(e, propsFormState, props.setFormState)
+      await func(target, propsFormState, props.setFormState)
     }
-    updateState(e.target)
+    updateState(target)
   }
 
-  const onBlur = (e, func = null) => {
+  const onBlur = async (target, func = null) => {
     if (props.allOnBlur){
-      props.allOnBlur(e, propsFormState, props.setFormState)
+      await props.allOnBlur(target, propsFormState, props.setFormState)
     }
     if (func) {
-      func(e, propsFormState, props.setFormState)
+      await func(target, propsFormState, props.setFormState)
     }
-    addTouchedField(e.target)
+    addTouchedField(target)
   }
 
   const processChildren = (children) => {
@@ -82,8 +82,8 @@ const Forme = (props) => {
 
       const spread = {
         ...defaultValues,
-        onChange: (e => onChange(e, child.props.onChange)),
-        onBlur: (e => onBlur(e, child.props.onBlur))
+        onChange: (e => onChange(transformTarget(e.target), child.props.onChange)),
+        onBlur: (e => onBlur(transformTarget(e.target), child.props.onBlur))
       }
 
       const ctrlableElements = ['input', 'textarea', 'select', 'datalist']
@@ -128,6 +128,17 @@ const Forme = (props) => {
   let formProps = {...props, onSubmit: (e => props.onSubmit(e, props.formState, props.setFormState))}
   propKeysForFields.forEach(key => delete formProps[key])
   return <form {...formProps}>{children}</form>
+}
+
+const transformTarget = (target) => {
+  // React has issues with it's Synthetic Event and async functions.
+  return  {
+    name: target.name, 
+    value: target.value, 
+    type: target.type, 
+    required: target.required, 
+    multiple: target.multiple
+  }
 }
 
 export default Forme
