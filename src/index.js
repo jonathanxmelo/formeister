@@ -137,6 +137,7 @@ const transformTarget = (target) => {
     value: target.value, 
     type: target.type, 
     required: target.required, 
+    checked: target.checked,
     multiple: target.multiple
   }
 }
