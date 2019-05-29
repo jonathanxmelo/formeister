@@ -59,7 +59,7 @@ const Forme = (props) => {
 
   const processChildren = (children) => {
     return React.Children.map(children, child => {
-      if (!child.props) return child
+      if (!child || !child.props) return child
       if (typeof child.props.children === 'object') {
         const children = processChildren(child.props.children)
         child = React.createElement(child.type, {...child.props, ...{children}})
