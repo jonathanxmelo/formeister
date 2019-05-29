@@ -2,7 +2,6 @@ import React from 'react'
 import propKeysForFields from './formStaticPropKeys'
 
 const Forme = (props) => {
-
   let propsFormState = { values: {}, touched: [], ...props.formState }
 
   const updateState = (target) => {
@@ -60,9 +59,14 @@ const Forme = (props) => {
   const processChildren = (children) => {
     return React.Children.map(children, child => {
       if (!child || !child.props) return child
+      
       if (typeof child.props.children === 'object') {
         const children = processChildren(child.props.children)
         child = React.createElement(child.type, {...child.props, ...{children}})
+      }else if (typeof child.type === 'function') {
+        let funcProps = {...props, ...child.props}
+        delete funcProps['children']
+        child = React.createElement(child.type, funcProps)
       }
 
       let defaultValues = {}
@@ -126,7 +130,14 @@ const Forme = (props) => {
   
   let formProps = {...props, onSubmit: (e => props.onSubmit(e, props.formState, props.setFormState))}
   propKeysForFields.forEach(key => delete formProps[key])
-  return <form {...formProps}>{children}</form>
+
+  if (props.htmlTag === false) {
+    return children
+  }else if (props.htmlTag) {
+    return React.createElement(props.htmlTag, {...formProps, ...{children}})
+  }else{
+    return <form {...formProps}>{children}</form>
+  }
 }
 
 const transformTarget = (target) => {

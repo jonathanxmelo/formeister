@@ -3,5 +3,6 @@ export default [
   'formState',
   'wrap',
   'allOnChange',
-  'allOnBlur'
+  'allOnBlur',
+  'htmlTag'
 ]
