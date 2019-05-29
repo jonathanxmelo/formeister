@@ -3,8 +3,7 @@ import propKeysForFields from './formStaticPropKeys'
 
 const Forme = (props) => {
 
-  let propsFormState = props.formState && props.formState.values && props.formState.touched ?
-    {...props.formState} : {values: {}, touched: []}
+  let propsFormState = { values: {}, touched: [], ...props.formState }
 
   const updateState = (target) => {
     let formState = propsFormState
