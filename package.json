@@ -1,6 +1,6 @@
 {
   "name": "formeister",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Easily build forms in React using Hooks.",
   "main": "dist/index.js",
   "scripts": {

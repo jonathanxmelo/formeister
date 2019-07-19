@@ -4,6 +4,24 @@ import propKeysForFields from './formStaticPropKeys'
 const Forme = (props) => {
   let propsFormState = { values: {}, touched: [], ...props.formState }
 
+  let cursor
+  let _target
+
+  const transformTarget = (target) => {
+    _target = target
+    cursor = target.selectionStart
+    
+    // React has issues with it's Synthetic Event and async functions.
+    return  {
+      name: target.name, 
+      value: target.value, 
+      type: target.type, 
+      required: target.required, 
+      checked: target.checked,
+      multiple: target.multiple
+    }
+  }
+
   const updateState = (target) => {
     let formState = propsFormState
     formState.values = formState.values || {}
@@ -26,6 +44,7 @@ const Forme = (props) => {
       formState.values[target.name] = target.value
     }
     props.setFormState(formState)
+    _target.selectionStart = _target.selectionEnd = cursor
   }
 
   const addTouchedField = (target) => {
@@ -136,18 +155,6 @@ const Forme = (props) => {
     return React.createElement(props.htmlTag, {...formProps, ...{children}})
   }else{
     return <form {...formProps}>{children}</form>
-  }
-}
-
-const transformTarget = (target) => {
-  // React has issues with it's Synthetic Event and async functions.
-  return  {
-    name: target.name, 
-    value: target.value, 
-    type: target.type, 
-    required: target.required, 
-    checked: target.checked,
-    multiple: target.multiple
   }
 }
 
