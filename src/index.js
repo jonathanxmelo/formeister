@@ -64,8 +64,7 @@ const Forme = (props) => {
         const children = processChildren(child.props.children)
         child = React.createElement(child.type, {...child.props, ...{children}})
       }else if (typeof child.type === 'function') {
-        let funcProps = {...props, ...child.props}
-        delete funcProps['children']
+        const funcProps = {...child.props}
         child = React.createElement(child.type, funcProps)
       }
 
